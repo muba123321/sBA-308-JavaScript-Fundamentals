@@ -122,7 +122,7 @@ function getLearnerData(course, ag, submissions) {
         learners[learner_id].assignments[assignment_id] =
           finalScore / assignment.points_possible;
 
-        // console.log(learners)
+      //  console.log(learners)
       } catch (err) {
         console.error(err.message);
       }
@@ -130,6 +130,8 @@ function getLearnerData(course, ag, submissions) {
 
     const results = [];
     for (const learnerId in learners) {
+
+
       const learner = learners[learnerId];
       const avg =
         learner.totalPossiblePoints === 0
@@ -137,13 +139,18 @@ function getLearnerData(course, ag, submissions) {
           : learner.totalScore / learner.totalPossiblePoints;
       const result = { id: learner.id, avg };
 
+     
       for (const assignmentId in learner.assignments) {
         result[assignmentId] = learner.assignments[assignmentId];
       }
 
       results.push(result);
-    }
 
+     
+    }
+          sorted = results .sort((a, b) => b.avg - a.avg);
+
+          console.log(sorted);
     return results;
   } catch (e) {
     console.error(e.message);
