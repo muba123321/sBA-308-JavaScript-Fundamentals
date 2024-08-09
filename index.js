@@ -74,7 +74,9 @@ const LearnerSubmissions = [
 ];
 
 function getLearnerData(course, ag, submissions) {
+  // Use try/catch and other logic to handle these types of errors gracefully.
   try {
+    // If an AssignmentGroup does not belong to its course (mismatching course_id), your program should throw an error.
     if (ag.course_id !== course.id) {
       throw new Error("Invalid AssignmentGroup for the provided CourseInfo");
     }
@@ -95,10 +97,11 @@ function getLearnerData(course, ag, submissions) {
         const score = sub.submission.score;
         const assignment = assignmentsById[assignment_id];
 
+        // You should also account for potential errors in the data that your program receives.
         if (!assignment || isNaN(score) || assignment.points_possible === 0) {
           throw new Error("Invalid data encountered");
         }
-
+        // If an assignment is not yet due, do not include it in the results or the average.
         if (new Date(assignment.due_at) > new Date()) {
           return;
         }
@@ -113,6 +116,8 @@ function getLearnerData(course, ag, submissions) {
         }
 
         let finalScore = score;
+
+        //if the learner’s submission is late (submitted_at is past due_at), deduct 10 percent of the total points possible from their score for that assignment.
         if (new Date(submitted_at) > new Date(assignment.due_at)) {
           finalScore *= 0.9;
         }
@@ -122,7 +127,7 @@ function getLearnerData(course, ag, submissions) {
         learners[learner_id].assignments[assignment_id] =
           finalScore / assignment.points_possible;
 
-      //  console.log(learners)
+        //  console.log(learners)
       } catch (err) {
         console.error(err.message);
       }
@@ -130,8 +135,6 @@ function getLearnerData(course, ag, submissions) {
 
     const results = [];
     for (const learnerId in learners) {
-
-
       const learner = learners[learnerId];
       const avg =
         learner.totalPossiblePoints === 0
@@ -139,18 +142,13 @@ function getLearnerData(course, ag, submissions) {
           : learner.totalScore / learner.totalPossiblePoints;
       const result = { id: learner.id, avg };
 
-     
       for (const assignmentId in learner.assignments) {
         result[assignmentId] = learner.assignments[assignmentId];
       }
 
       results.push(result);
-
-     
     }
-          sorted = results .sort((a, b) => b.avg - a.avg);
 
-          console.log(sorted);
     return results;
   } catch (e) {
     console.error(e.message);
